@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-      <div class="max-w-6xl mx-auto px-4 py-6">
+      <div class="max-w-7xl mx-auto px-4 py-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -22,10 +22,10 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left Column -->
-        <div class="lg:col-span-2 space-y-8">
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <!-- Left Column - Friends and Expenses -->
+        <div class="space-y-8">
           <FriendManager />
           <ExpenseManager v-if="friends.length > 0" />
           <div v-else class="card text-center py-12">
@@ -36,9 +36,9 @@
           </div>
         </div>
 
-        <!-- Right Column -->
+        <!-- Right Column - Balance, Share, and Import -->
         <div class="space-y-8">
-          <div class="lg:sticky lg:top-24 lg:self-start space-y-8">
+          <div class="xl:sticky xl:top-24 xl:self-start space-y-8">
             <BalanceDisplay />
             <ShareableLink />
             <DataImport />
@@ -49,7 +49,7 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 mt-16">
-      <div class="max-w-6xl mx-auto px-4 py-6 text-center text-gray-500 text-sm">
+      <div class="max-w-7xl mx-auto px-4 py-6 text-center text-gray-500 text-sm">
         <p>Built with Nuxt 3 • Data persisted with cookies • Fully reactive • Shareable links</p>
       </div>
     </footer>
