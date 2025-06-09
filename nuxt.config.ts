@@ -12,5 +12,9 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Split expenses easily with friends' }
       ]
     }
-  }
+  },
+  nitro: {
+    preset: 'netlify',
+  },
+  ssr: false,
 })
