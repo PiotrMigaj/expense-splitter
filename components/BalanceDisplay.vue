@@ -8,12 +8,65 @@
     </div>
     
     <div v-if="settlements.length > 0" class="space-y-6">
-      <!-- Settlements -->
-      <div>
+      <!-- Optimized Settlements -->
+      <div v-if="optimizedSettlements.length > 0">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+          <SparklesIcon class="w-5 h-5 mr-2 text-purple-600" />
+          Optimized Settlements:
+        </h3>
+        <div class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200 mb-4">
+          <div class="text-sm text-purple-700 mb-2 font-medium">
+            Minimum {{ optimizedSettlements.length }} transaction{{ optimizedSettlements.length !== 1 ? 's' : '' }} needed to settle all debts
+          </div>
+          <div class="text-xs text-purple-600">
+            This is the most efficient way to settle all expenses
+          </div>
+        </div>
+        <div class="space-y-3">
+          <TransitionGroup name="optimized-settlement" tag="div">
+            <div
+              v-for="settlement in optimizedSettlements"
+              :key="`opt-${settlement.from}-${settlement.to}`"
+              class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-emerald-50 rounded-lg border border-purple-200 hover:shadow-md transition-all duration-200"
+            >
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <SparklesIcon class="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900">
+                    <span class="text-purple-600">{{ getFriendName(settlement.from) }}</span>
+                    <span class="text-gray-500 mx-2">pays</span>
+                    <span class="text-emerald-600">{{ getFriendName(settlement.to) }}</span>
+                  </div>
+                  <div class="text-xs text-gray-500">Final settlement</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-lg font-bold text-purple-600">
+                  {{ settlement.amount.toFixed(2) }} PLN
+                </div>
+                <div class="text-xs text-gray-500">optimized</div>
+              </div>
+            </div>
+          </TransitionGroup>
+        </div>
+      </div>
+
+      <!-- Direct Settlements -->
+      <div class="pt-4 border-t border-gray-200">
         <h3 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
           <ArrowRightIcon class="w-5 h-5 mr-2 text-blue-600" />
-          Who owes whom:
+          Direct Settlements:
         </h3>
+        <div class="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-4">
+          <div class="text-sm text-blue-700 font-medium">
+            {{ settlements.length }} direct transaction{{ settlements.length !== 1 ? 's' : '' }} based on who paid what
+          </div>
+          <div class="text-xs text-blue-600">
+            Shows all individual debts from each expense
+          </div>
+        </div>
         <div class="space-y-3">
           <TransitionGroup name="settlement" tag="div">
             <div
@@ -31,7 +84,7 @@
                     <span class="text-gray-500 mx-2">pays</span>
                     <span class="text-emerald-600">{{ getFriendName(settlement.to) }}</span>
                   </div>
-                  <div class="text-xs text-gray-500">Settlement payment</div>
+                  <div class="text-xs text-gray-500">Direct settlement</div>
                 </div>
               </div>
               <div class="text-right">
@@ -87,18 +140,22 @@
           <ChartBarIcon class="w-5 h-5 mr-2 text-gray-600" />
           Summary:
         </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div class="bg-blue-50 p-3 rounded-lg">
             <div class="text-sm text-blue-600 font-medium">Total Expenses</div>
             <div class="text-lg font-bold text-blue-700">{{ totalExpenses.toFixed(2) }} PLN</div>
           </div>
-          <div class="bg-emerald-50 p-3 rounded-lg">
-            <div class="text-sm text-emerald-600 font-medium">Settlements Needed</div>
-            <div class="text-lg font-bold text-emerald-700">{{ settlements.length }}</div>
-          </div>
           <div class="bg-purple-50 p-3 rounded-lg">
-            <div class="text-sm text-purple-600 font-medium">Active Friends</div>
-            <div class="text-lg font-bold text-purple-700">{{ friends.length }}</div>
+            <div class="text-sm text-purple-600 font-medium">Optimized</div>
+            <div class="text-lg font-bold text-purple-700">{{ optimizedSettlements.length }} transactions</div>
+          </div>
+          <div class="bg-emerald-50 p-3 rounded-lg">
+            <div class="text-sm text-emerald-600 font-medium">Direct</div>
+            <div class="text-lg font-bold text-emerald-700">{{ settlements.length }} settlements</div>
+          </div>
+          <div class="bg-orange-50 p-3 rounded-lg">
+            <div class="text-sm text-orange-600 font-medium">Active Friends</div>
+            <div class="text-lg font-bold text-orange-700">{{ friends.length }}</div>
           </div>
         </div>
       </div>
@@ -119,12 +176,14 @@ import {
   CurrencyDollarIcon, 
   ChartBarIcon,
   PlusIcon,
-  MinusIcon
+  MinusIcon,
+  SparklesIcon
 } from '@heroicons/vue/24/outline'
 
-const { friends, expenses, calculateBalances, calculateSettlements, getFriendName } = useExpenseSplitter()
+const { friends, expenses, calculateBalances, calculateSettlements, calculateOptimizedSettlements, getFriendName } = useExpenseSplitter()
 
 const settlements = computed(() => calculateSettlements())
+const optimizedSettlements = computed(() => calculateOptimizedSettlements())
 
 const balancesDisplay = computed(() => {
   const balances = calculateBalances()
@@ -174,13 +233,17 @@ const getBalanceStatus = (amount: number) => {
 <style scoped>
 .settlement-enter-active,
 .settlement-leave-active,
+.optimized-settlement-enter-active,
+.optimized-settlement-leave-active,
 .balance-enter-active,
 .balance-leave-active {
   transition: all 0.3s ease;
 }
 
 .settlement-enter-from,
-.settlement-leave-to {
+.settlement-leave-to,
+.optimized-settlement-enter-from,
+.optimized-settlement-leave-to {
   opacity: 0;
   transform: translateX(-20px);
 }
